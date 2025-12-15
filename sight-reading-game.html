@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <title>시창청음 트레이닝</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        :root {
+            --safe-area-inset-top: env(safe-area-inset-top);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom);
+            --safe-area-inset-left: env(safe-area-inset-left);
+            --safe-area-inset-right: env(safe-area-inset-right);
+            
+            --bg-primary: #000000;
+            --text-primary: #FFFFFF;
+            --accent-cyan: #00D9FF;
+            --accent-blue: #4A90E2;
+            --correct: #00FF88;
+            --wrong: #FF4444;
+            --neutral: #666666;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            overscroll-behavior: none;
+            touch-action: manipulation;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding-top: var(--safe-area-inset-top);
+            padding-bottom: var(--safe-area-inset-bottom);
+            padding-left: var(--safe-area-inset-left);
+            padding-right: var(--safe-area-inset-right);
+        }
+
+        /* Main Menu */
+        .main-menu {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            padding: 40px 20px;
+            padding-top: calc(40px + var(--safe-area-inset-top));
+            padding-bottom: calc(40px + var(--safe-area-inset-bottom));
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-menu.active {
+            display: flex;
+        }
+
+        .menu-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .menu-subtitle {
+            font-size: 16px;
+            color: #999;
+            margin-bottom: 48px;
+            text-align: center;
+        }
+
+        .mode-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 40px;
+        }
+
+        .mode-btn {
+            background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+            border: 3px solid var(--accent-cyan);
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .mode-btn:active::before {
+            left: 100%;
+        }
+
+        .mode-btn:active {
+            transform: scale(0.97);
+            border-color: var(--accent-blue);
+        }
+
+        .mode-btn-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .mode-btn-desc {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .mode-btn-record {
+            font-size: 12px;
+            color: var(--accent-cyan);
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .records-section {
+            width: 100%;
+            max-width: 400px;
+            background: #0d0d0d;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .records-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .record-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #222;
+        }
+
+        .record-item:last-child {
+            border-bottom: none;
+        }
+
+        .record-label {
+            color: #ccc;
+        }
+
+        .record-time {
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        /* Game Screen */
+        .game-screen {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .game-screen.active {
+            display: flex;
+        }
+
+        /* Header */
+        .header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .score-display {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-cyan);
+        }
+
+        .progress-display {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .timer-display {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .streak {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* Score Area - 60% of screen */
+        .score-area {
+            flex: 6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        #staff-svg {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+        }
+
+        .key-signature-display {
+            font-size: 16px;
+            color: var(--accent-cyan);
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
+        /* Feedback Area */
+        .feedback-area {
+            padding: 12px 20px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .input-chip {
+            background: #1a1a1a;
+            border: 2px solid var(--accent-cyan);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            animation: chipAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes chipAppear {
+            0% {
+                transform: scale(0) rotate(-10deg);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .input-chip.correct {
+            border-color: var(--correct);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .input-chip.wrong {
+            border-color: var(--wrong);
+            background: rgba(255, 68, 68, 0.1);
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Control Area - Fixed Bottom (40% area) */
+        .control-area {
+            flex: 4;
+            display: flex;
+            flex-direction: column;
+            padding: 16px 20px;
+            padding-bottom: max(20px, calc(20px + var(--safe-area-inset-bottom)));
+            gap: 16px;
+            background: linear-gradient(to bottom, transparent, #0a0a0a);
+        }
+
+        /* Accidental Row */
+        .accidental-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .accidental-btn {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 32px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 300;
+        }
+
+        .accidental-btn:active {
+            transform: scale(0.95);
+        }
+
+        .accidental-btn.active {
+            background: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* Note Buttons Row */
+        .note-row {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .note-btn {
+            background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+            border: 2px solid var(--accent-blue);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 700;
+            padding: 20px 0;
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .note-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(0, 217, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        .note-btn:active::before {
+            width: 200%;
+            height: 200%;
+        }
+
+        .note-btn:active {
+            transform: scale(0.92);
+            border-color: var(--accent-cyan);
+        }
+
+        /* Action Buttons */
+        .action-row {
+            display: block;
+            width: 100%;
+        }
+
+        .action-btn {
+            background: #1a1a1a;
+            border: 2px solid #FF4444;
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 700;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 56px;
+            width: 100%;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.97);
+            background: #2a1a1a;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 2px solid var(--accent-cyan);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 320px;
+            text-align: center;
+            animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .modal-message {
+            font-size: 18px;
+            color: #ccc;
+            margin-bottom: 24px;
+        }
+
+        .modal-btn {
+            background: var(--accent-cyan);
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-size: 18px;
+            font-weight: 700;
+            padding: 16px 40px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Complete Modal */
+        .complete-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #0d0d0d;
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            color: #999;
+        }
+
+        .stat-value {
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
+        .new-record {
+            color: var(--correct);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 16px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Main Menu -->
+        <div class="main-menu active" id="main-menu">
+            <div class="menu-title">🎵 시창청음 트레이닝</div>
+            <div class="menu-subtitle">조표를 읽고 정확한 음을 입력하세요</div>
+            
+            <div class="mode-buttons">
+                <div class="mode-btn" data-mode="1">
+                    <div class="mode-btn-title">1단계: 단음</div>
+                    <div class="mode-btn-desc">음표 1개씩 출제 (20문제)</div>
+                    <div class="mode-btn-record" id="record-1">최고 기록: -</div>
+                </div>
+                
+                <div class="mode-btn" data-mode="2">
+                    <div class="mode-btn-title">2단계: 2화음</div>
+                    <div class="mode-btn-desc">음표 2개씩 출제 (20문제)</div>
+                    <div class="mode-btn-record" id="record-2">최고 기록: -</div>
+                </div>
+                
+                <div class="mode-btn" data-mode="3">
+                    <div class="mode-btn-title">3단계: 3화음</div>
+                    <div class="mode-btn-desc">음표 3개씩 출제 (20문제)</div>
+                    <div class="mode-btn-record" id="record-3">최고 기록: -</div>
+                </div>
+            </div>
+
+            <div class="records-section">
+                <div class="records-title">🏆 최고 기록</div>
+                <div class="record-item">
+                    <span class="record-label">1단계</span>
+                    <span class="record-time" id="best-1">-</span>
+                </div>
+                <div class="record-item">
+                    <span class="record-label">2단계</span>
+                    <span class="record-time" id="best-2">-</span>
+                </div>
+                <div class="record-item">
+                    <span class="record-label">3단계</span>
+                    <span class="record-time" id="best-3">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="game-screen" id="game-screen">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="score-display">점수: <span id="score">0</span></div>
+                    <div class="progress-display" id="progress">문제: 1/20</div>
+                </div>
+                <div class="header-right">
+                    <div class="timer-display" id="timer">00:00</div>
+                    <div class="streak">연속: <span id="streak">0</span></div>
+                </div>
+            </div>
+
+            <!-- Score Area -->
+            <div class="score-area">
+                <svg id="staff-svg" viewBox="0 0 400 200"></svg>
+                <div class="key-signature-display" id="key-display"></div>
+            </div>
+
+            <!-- Feedback Area -->
+            <div class="feedback-area" id="feedback-area"></div>
+
+            <!-- Control Area -->
+            <div class="control-area">
+                <!-- Accidentals -->
+                <div class="accidental-row">
+                    <button class="accidental-btn" data-accidental="♭">♭</button>
+                    <button class="accidental-btn active" data-accidental="♮">♮</button>
+                    <button class="accidental-btn" data-accidental="♯">♯</button>
+                </div>
+
+                <!-- Notes -->
+                <div class="note-row">
+                    <button class="note-btn" data-note="C">C</button>
+                    <button class="note-btn" data-note="D">D</button>
+                    <button class="note-btn" data-note="E">E</button>
+                    <button class="note-btn" data-note="F">F</button>
+                    <button class="note-btn" data-note="G">G</button>
+                    <button class="note-btn" data-note="A">A</button>
+                    <button class="note-btn" data-note="B">B</button>
+                </div>
+
+                <!-- Actions -->
+                <div class="action-row">
+                    <button class="action-btn" id="quit-btn">그만두기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="result-modal">
+        <div class="modal-content">
+            <div class="modal-title" id="modal-title">정답!</div>
+            <div class="modal-message" id="modal-message"></div>
+            <button class="modal-btn" id="modal-continue">계속하기</button>
+        </div>
+    </div>
+
+    <script>
+        // Web Audio API Setup
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playNote(frequency, duration = 0.3) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = 'triangle';
+            oscillator.frequency.value = frequency;
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        // Note frequencies (C4 to B5)
+        const noteFrequencies = {
+            'C': 261.63,
+            'C#': 277.18, 'Db': 277.18,
+            'D': 293.66,
+            'D#': 311.13, 'Eb': 311.13,
+            'E': 329.63,
+            'F': 349.23,
+            'F#': 369.99, 'Gb': 369.99,
+            'G': 392.00,
+            'G#': 415.30, 'Ab': 415.30,
+            'A': 440.00,
+            'A#': 466.16, 'Bb': 466.16,
+            'B': 493.88,
+            // Higher octave
+            'C5': 523.25,
+            'D5': 587.33,
+            'E5': 659.25,
+            'F5': 698.46,
+            'G5': 783.99,
+            'A5': 880.00,
+            'B5': 987.77
+        };
+
+        // Key Signatures
+        const keySignatures = {
+            'C Major': [],
+            'G Major': ['F#'],
+            'D Major': ['F#', 'C#'],
+            'F Major': ['Bb'],
+            'Bb Major': ['Bb', 'Eb'],
+            'A Major': ['F#', 'C#', 'G#'],
+            'E Major': ['F#', 'C#', 'G#', 'D#']
+        };
+
+        // Game State
+        let gameState = {
+            mode: 1,
+            score: 0,
+            streak: 0,
+            currentQuestion: 1,
+            totalQuestions: 20,
+            currentKey: '',
+            currentNotes: [],
+            userInput: [],
+            selectedAccidental: '♮',
+            startTime: null,
+            timerInterval: null
+        };
+
+        // DOM Elements
+        const mainMenu = document.getElementById('main-menu');
+        const gameScreen = document.getElementById('game-screen');
+        const staffSvg = document.getElementById('staff-svg');
+        const keyDisplay = document.getElementById('key-display');
+        const feedbackArea = document.getElementById('feedback-area');
+        const scoreDisplay = document.getElementById('score');
+        const streakDisplay = document.getElementById('streak');
+        const progressDisplay = document.getElementById('progress');
+        const timerDisplay = document.getElementById('timer');
+        const resultModal = document.getElementById('result-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+
+        // LocalStorage functions
+        function saveRecord(mode, time) {
+            const key = `best-time-mode-${mode}`;
+            const currentBest = localStorage.getItem(key);
+            
+            if (!currentBest || time < parseInt(currentBest)) {
+                localStorage.setItem(key, time);
+                return true; // New record
+            }
+            return false;
+        }
+
+        function getRecord(mode) {
+            const key = `best-time-mode-${mode}`;
+            const time = localStorage.getItem(key);
+            return time ? parseInt(time) : null;
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function loadRecords() {
+            for (let i = 1; i <= 3; i++) {
+                const record = getRecord(i);
+                const recordEl = document.getElementById(`record-${i}`);
+                const bestEl = document.getElementById(`best-${i}`);
+                
+                if (record) {
+                    recordEl.textContent = `최고 기록: ${formatTime(record)}`;
+                    bestEl.textContent = formatTime(record);
+                } else {
+                    recordEl.textContent = '최고 기록: -';
+                    bestEl.textContent = '-';
+                }
+            }
+        }
+
+        // Timer functions
+        function startTimer() {
+            gameState.startTime = Date.now();
+            gameState.timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+                timerDisplay.textContent = formatTime(elapsed);
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+                gameState.timerInterval = null;
+            }
+            const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+            return elapsed;
+        }
+
+        // Draw Staff
+        function drawStaff() {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('viewBox', '0 0 400 200');
+            
+            // Staff lines
+            for (let i = 0; i < 5; i++) {
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', '50');
+                line.setAttribute('y1', 60 + i * 15);
+                line.setAttribute('x2', '350');
+                line.setAttribute('y2', 60 + i * 15);
+                line.setAttribute('stroke', '#666');
+                line.setAttribute('stroke-width', '2');
+                svg.appendChild(line);
+            }
+
+            // Treble clef
+            const clef = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            clef.setAttribute('x', '60');
+            clef.setAttribute('y', '100');
+            clef.setAttribute('font-size', '60');
+            clef.setAttribute('fill', '#00D9FF');
+            clef.textContent = '𝄞';
+            svg.appendChild(clef);
+
+            return svg;
+        }
+
+        function drawKeySignature(svg, keyName) {
+            const sharps = keySignatures[keyName] || [];
+            
+            // 높은음자리표 조표 위치 (텍스트 baseline 보정)
+            // 음표 중심에서 약간 위로 조정 (font-size 40 기준)
+            const sharpPositions = { 
+                'F': 74,    // F5 (1선) - 60 + 14
+                'C': 96.5,  // C5 (2-3선 사이) - 82.5 + 14
+                'G': 66.5,  // G5 (1선 위) - 52.5 + 14
+                'D': 89,    // D5 (2선) - 75 + 14
+                'A': 59,    // A5 (1선 위 보조선) - 45 + 14
+                'E': 81.5,  // E5 (1-2선 사이) - 67.5 + 14
+                'B': 51.5   // B5 (1선 위 2번째 간) - 37.5 + 14
+            };
+            
+            // 플랫 순서: B, E, A, D, G, C, F
+            const flatPositions = { 
+                'B': 51.5,  // B5 - 37.5 + 14
+                'E': 81.5,  // E5 - 67.5 + 14
+                'A': 59,    // A5 - 45 + 14
+                'D': 89,    // D5 - 75 + 14
+                'G': 66.5,  // G5 - 52.5 + 14
+                'C': 96.5,  // C5 - 82.5 + 14
+                'F': 74     // F5 - 60 + 14
+            };
+            
+            sharps.forEach((note, i) => {
+                const accidental = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                accidental.setAttribute('x', 120 + i * 20);
+                const isSharp = note.includes('#');
+                accidental.setAttribute('y', isSharp ? sharpPositions[note[0]] : flatPositions[note[0]]);
+                accidental.setAttribute('font-size', '40');
+                accidental.setAttribute('fill', '#00D9FF');
+                accidental.setAttribute('text-anchor', 'middle');
+                accidental.textContent = isSharp ? '♯' : '♭';
+                svg.appendChild(accidental);
+            });
+        }
+
+        function drawNote(svg, noteName, x = 250) {
+            // 높은음자리표(Treble Clef) 정확한 위치
+            // 오선: 60(F5), 75(D5), 90(B4), 105(G4), 120(E4)
+            const notePositions = {
+                'C': 82.5,  // 2-3선 사이 (C5 - 가온 C)
+                'D': 75,    // 2선 (D5)
+                'E': 67.5,  // 1-2선 사이 (E5)
+                'F': 60,    // 1선 (F5)
+                'G': 52.5,  // 1선 위 간 (G5)
+                'A': 45,    // 1선 위 보조선 (A5)
+                'B': 37.5,  // 1선 위 2번째 간 (B5)
+            };
+            
+            const y = notePositions[noteName];
+            
+            // Ledger lines (보조선)
+            if (noteName === 'A') {
+                // A5 보조선
+                const ledger = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                ledger.setAttribute('x1', x - 15);
+                ledger.setAttribute('y1', 45);
+                ledger.setAttribute('x2', x + 15);
+                ledger.setAttribute('y2', 45);
+                ledger.setAttribute('stroke', '#666');
+                ledger.setAttribute('stroke-width', '2');
+                svg.appendChild(ledger);
+            }
+            
+            if (noteName === 'B') {
+                // B5는 A5 보조선 위에 있으므로 A5 보조선도 그려줌
+                const ledger = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                ledger.setAttribute('x1', x - 15);
+                ledger.setAttribute('y1', 45);
+                ledger.setAttribute('x2', x + 15);
+                ledger.setAttribute('y2', 45);
+                ledger.setAttribute('stroke', '#666');
+                ledger.setAttribute('stroke-width', '2');
+                svg.appendChild(ledger);
+            }
+            
+            const note = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+            note.setAttribute('cx', x);
+            note.setAttribute('cy', y);
+            note.setAttribute('rx', '10');
+            note.setAttribute('ry', '8');
+            note.setAttribute('fill', '#FFFFFF');
+            svg.appendChild(note);
+            
+            // Stem direction (높은 음은 아래로)
+            const stemDirection = (noteName === 'A' || noteName === 'B') ? 1 : -1;
+            const stemY2 = stemDirection === 1 ? y + 35 : y - 35;
+            const stemX = stemDirection === 1 ? x - 9 : x + 9;
+            
+            const stem = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            stem.setAttribute('x1', stemX);
+            stem.setAttribute('y1', y);
+            stem.setAttribute('x2', stemX);
+            stem.setAttribute('y2', stemY2);
+            stem.setAttribute('stroke', '#FFFFFF');
+            stem.setAttribute('stroke-width', '2');
+            svg.appendChild(stem);
+        }
+
+        function drawChord(svg, noteNames, x = 250) {
+            // Sort notes from bottom to top
+            const order = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+            const sortedNotes = [...noteNames].sort((a, b) => {
+                return order.indexOf(a) - order.indexOf(b);
+            });
+
+            const notePositions = {
+                'C': 82.5,  // 2-3선 사이 (C5 - 가온 C)
+                'D': 75,    // 2선 (D5)
+                'E': 67.5,  // 1-2선 사이 (E5)
+                'F': 60,    // 1선 (F5)
+                'G': 52.5,  // 1선 위 간 (G5)
+                'A': 45,    // 1선 위 보조선 (A5)
+                'B': 37.5,  // 1선 위 2번째 간 (B5)
+            };
+
+            // Draw ledger line if A or B is in the chord
+            if (noteNames.includes('A') || noteNames.includes('B')) {
+                const ledger = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                ledger.setAttribute('x1', x - 15);
+                ledger.setAttribute('y1', 45);
+                ledger.setAttribute('x2', x + 15);
+                ledger.setAttribute('y2', 45);
+                ledger.setAttribute('stroke', '#666');
+                ledger.setAttribute('stroke-width', '2');
+                svg.appendChild(ledger);
+            }
+
+            sortedNotes.forEach((noteName) => {
+                const y = notePositions[noteName];
+                
+                const note = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+                note.setAttribute('cx', x);
+                note.setAttribute('cy', y);
+                note.setAttribute('rx', '10');
+                note.setAttribute('ry', '8');
+                note.setAttribute('fill', '#FFFFFF');
+                svg.appendChild(note);
+            });
+
+            // Single stem for chord - direction based on highest note
+            const highestNote = sortedNotes[sortedNotes.length - 1];
+            const stemDirection = (highestNote === 'A' || highestNote === 'B') ? 1 : -1;
+            
+            const lowestY = notePositions[sortedNotes[0]];
+            const highestY = notePositions[sortedNotes[sortedNotes.length - 1]];
+            const stemY = stemDirection === 1 ? lowestY : highestY;
+            const stemX = stemDirection === 1 ? x - 9 : x + 9;
+            const stemY2 = stemDirection === 1 ? stemY + 35 : stemY - 35;
+            
+            const stem = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            stem.setAttribute('x1', stemX);
+            stem.setAttribute('y1', stemY);
+            stem.setAttribute('x2', stemX);
+            stem.setAttribute('y2', stemY2);
+            stem.setAttribute('stroke', '#FFFFFF');
+            stem.setAttribute('stroke-width', '2');
+            svg.appendChild(stem);
+        }
+
+        function generateQuestion() {
+            const keys = Object.keys(keySignatures);
+            const randomKey = keys[Math.floor(Math.random() * keys.length)];
+            const notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+            
+            // Generate notes based on mode
+            const noteCount = gameState.mode;
+            const selectedNotes = [];
+            
+            for (let i = 0; i < noteCount; i++) {
+                const randomNote = notes[Math.floor(Math.random() * notes.length)];
+                selectedNotes.push(randomNote);
+            }
+            
+            gameState.currentKey = randomKey;
+            gameState.currentNotes = selectedNotes;
+            gameState.userInput = [];
+            
+            // Clear and redraw
+            staffSvg.innerHTML = '';
+            const svg = drawStaff();
+            drawKeySignature(svg, randomKey);
+            
+            if (noteCount === 1) {
+                drawNote(svg, selectedNotes[0]);
+            } else {
+                drawChord(svg, selectedNotes);
+            }
+            
+            staffSvg.innerHTML = svg.innerHTML;
+            keyDisplay.textContent = randomKey;
+            feedbackArea.innerHTML = '';
+            
+            // Update progress
+            progressDisplay.textContent = `문제: ${gameState.currentQuestion}/${gameState.totalQuestions}`;
+        }
+
+        function getExpectedNote(note) {
+            const keyAccidentals = keySignatures[gameState.currentKey] || [];
+            
+            for (const accidental of keyAccidentals) {
+                if (accidental[0] === note) {
+                    return note + accidental[1];
+                }
+            }
+            
+            return note;
+        }
+
+        function checkAnswer() {
+            const expected = gameState.currentNotes.map(getExpectedNote);
+            const userAnswer = gameState.userInput;
+            
+            console.log('Expected:', expected);
+            console.log('User Answer:', userAnswer);
+            
+            if (userAnswer.length !== expected.length) return null;
+            
+            // For single note: direct comparison
+            if (expected.length === 1) {
+                const result = expected[0] === userAnswer[0];
+                console.log(`Single note check: ${expected[0]} === ${userAnswer[0]} = ${result}`);
+                return result;
+            }
+            
+            // For chords: check if all notes are present (order doesn't matter)
+            const sortedExpected = [...expected].sort();
+            const sortedUserAnswer = [...userAnswer].sort();
+            
+            console.log('Sorted Expected:', sortedExpected);
+            console.log('Sorted User:', sortedUserAnswer);
+            
+            const isCorrect = sortedExpected.every((note, i) => {
+                const match = note === sortedUserAnswer[i];
+                console.log(`  ${note} === ${sortedUserAnswer[i]} = ${match}`);
+                return match;
+            });
+            
+            return isCorrect;
+        }
+
+        function showResult(isCorrect) {
+            if (isCorrect) {
+                gameState.score += 10;
+                gameState.streak++;
+                
+                // Update chips to show correct
+                document.querySelectorAll('.input-chip').forEach(chip => {
+                    chip.classList.add('correct');
+                });
+            } else {
+                gameState.streak = 0;
+                
+                // Update chips to show wrong
+                document.querySelectorAll('.input-chip').forEach(chip => {
+                    chip.classList.add('wrong');
+                });
+            }
+            
+            scoreDisplay.textContent = gameState.score;
+            streakDisplay.textContent = gameState.streak;
+            
+            setTimeout(() => {
+                if (gameState.currentQuestion >= gameState.totalQuestions) {
+                    showCompleteModal();
+                } else {
+                    gameState.currentQuestion++;
+                    generateQuestion();
+                }
+            }, 1000);
+        }
+
+        function showCompleteModal() {
+            const elapsed = stopTimer();
+            const isNewRecord = saveRecord(gameState.mode, elapsed);
+            
+            modalTitle.textContent = '🎉 완료!';
+            modalTitle.style.color = '#00FF88';
+            
+            let html = '';
+            
+            if (isNewRecord) {
+                html += '<div class="new-record">⭐ 신기록 달성! ⭐</div>';
+            }
+            
+            html += '<div class="complete-stats">';
+            html += `<div class="stat-row"><span class="stat-label">완료 시간</span><span class="stat-value">${formatTime(elapsed)}</span></div>`;
+            html += `<div class="stat-row"><span class="stat-label">총 점수</span><span class="stat-value">${gameState.score}점</span></div>`;
+            html += `<div class="stat-row"><span class="stat-label">최고 연속</span><span class="stat-value">${gameState.streak}개</span></div>`;
+            
+            const bestTime = getRecord(gameState.mode);
+            if (bestTime) {
+                html += `<div class="stat-row"><span class="stat-label">최고 기록</span><span class="stat-value">${formatTime(bestTime)}</span></div>`;
+            }
+            
+            html += '</div>';
+            
+            modalMessage.innerHTML = html;
+            resultModal.classList.add('active');
+        }
+
+        function addUserInput(note) {
+            gameState.userInput.push(note);
+            
+            const chip = document.createElement('div');
+            chip.className = 'input-chip';
+            chip.textContent = note;
+            feedbackArea.appendChild(chip);
+            
+            // Play sound
+            const frequency = noteFrequencies[note] || noteFrequencies[note[0]];
+            if (frequency) playNote(frequency);
+            
+            // Auto-check if input complete
+            if (gameState.userInput.length === gameState.currentNotes.length) {
+                setTimeout(() => {
+                    const result = checkAnswer();
+                    showResult(result);
+                }, 300);
+            }
+        }
+
+        function startGame(mode) {
+            gameState = {
+                mode: mode,
+                score: 0,
+                streak: 0,
+                currentQuestion: 1,
+                totalQuestions: 20,
+                currentKey: '',
+                currentNotes: [],
+                userInput: [],
+                selectedAccidental: '♮',
+                startTime: null,
+                timerInterval: null
+            };
+            
+            scoreDisplay.textContent = '0';
+            streakDisplay.textContent = '0';
+            timerDisplay.textContent = '00:00';
+            
+            mainMenu.classList.remove('active');
+            gameScreen.classList.add('active');
+            
+            startTimer();
+            generateQuestion();
+        }
+
+        function returnToMenu() {
+            stopTimer();
+            gameScreen.classList.remove('active');
+            mainMenu.classList.add('active');
+            loadRecords();
+        }
+
+        // Event Listeners
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const mode = parseInt(btn.dataset.mode);
+                
+                // Request fullscreen on mobile
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.log('Fullscreen request failed:', err);
+                    });
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                }
+                
+                startGame(mode);
+            });
+        });
+
+        document.querySelectorAll('.accidental-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.accidental-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                gameState.selectedAccidental = btn.dataset.accidental;
+            });
+        });
+
+        document.querySelectorAll('.note-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const note = btn.dataset.note;
+                let finalNote = note;
+                
+                if (gameState.selectedAccidental === '♯') {
+                    finalNote = note + '#';
+                } else if (gameState.selectedAccidental === '♭') {
+                    finalNote = note + 'b';
+                }
+                
+                addUserInput(finalNote);
+            });
+        });
+
+        document.getElementById('quit-btn').addEventListener('click', () => {
+            returnToMenu();
+        });
+
+        document.getElementById('modal-continue').addEventListener('click', () => {
+            resultModal.classList.remove('active');
+            returnToMenu();
+        });
+
+        // Initialize
+        loadRecords();
+    </script>
+</body>
+</html>
