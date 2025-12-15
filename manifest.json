@@ -1,0 +1,22 @@
+{
+  "name": "시창청음 트레이닝",
+  "short_name": "시창청음",
+  "description": "조표를 읽고 정확한 음을 입력하는 음악 교육 게임",
+  "start_url": "./sight-reading-game.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%23000'/%3E%3Ctext x='96' y='130' font-size='100' text-anchor='middle' fill='%2300D9FF' font-family='serif'%3E𝄞%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23000'/%3E%3Ctext x='256' y='350' font-size='280' text-anchor='middle' fill='%2300D9FF' font-family='serif'%3E𝄞%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
