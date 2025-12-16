@@ -686,16 +686,13 @@
             'B5': 987.77
         };
 
-        // Key Signatures
+        // Key Signatures (실용적인 조표만)
         const keySignatures = {
-            // 플랫 조표 (7개)
+            // 플랫 조표 (4개)
             'F Major': ['Bb'],
             'Bb Major': ['Bb', 'Eb'],
             'Eb Major': ['Bb', 'Eb', 'Ab'],
             'Ab Major': ['Bb', 'Eb', 'Ab', 'Db'],
-            'Db Major': ['Bb', 'Eb', 'Ab', 'Db', 'Gb'],
-            'Gb Major': ['Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb'],
-            'Cb Major': ['Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb', 'Fb'],
             // 샵 조표 (3개)
             'G Major': ['F#'],
             'D Major': ['F#', 'C#'],
@@ -742,36 +739,6 @@
                 sevenths: [
                     ['Ab', 'C', 'Eb', 'G'], ['Bb', 'Db', 'F', 'Ab'], ['C', 'Eb', 'G', 'Bb'],
                     ['Db', 'F', 'Ab', 'C'], ['Eb', 'G', 'Bb', 'Db'], ['F', 'Ab', 'C', 'Eb']
-                ]
-            },
-            'Db Major': {
-                triads: [
-                    ['Db', 'F', 'Ab'], ['Eb', 'Gb', 'Bb'], ['F', 'Ab', 'C'],
-                    ['Gb', 'Bb', 'Db'], ['Ab', 'C', 'Eb'], ['Bb', 'Db', 'F']
-                ],
-                sevenths: [
-                    ['Db', 'F', 'Ab', 'C'], ['Eb', 'Gb', 'Bb', 'Db'], ['F', 'Ab', 'C', 'Eb'],
-                    ['Gb', 'Bb', 'Db', 'F'], ['Ab', 'C', 'Eb', 'Gb'], ['Bb', 'Db', 'F', 'Ab']
-                ]
-            },
-            'Gb Major': {
-                triads: [
-                    ['Gb', 'Bb', 'Db'], ['Ab', 'Cb', 'Eb'], ['Bb', 'Db', 'F'],
-                    ['Cb', 'Eb', 'Gb'], ['Db', 'F', 'Ab'], ['Eb', 'Gb', 'Bb']
-                ],
-                sevenths: [
-                    ['Gb', 'Bb', 'Db', 'F'], ['Ab', 'Cb', 'Eb', 'Gb'], ['Bb', 'Db', 'F', 'Ab'],
-                    ['Cb', 'Eb', 'Gb', 'Bb'], ['Db', 'F', 'Ab', 'Cb'], ['Eb', 'Gb', 'Bb', 'Db']
-                ]
-            },
-            'Cb Major': {
-                triads: [
-                    ['Cb', 'Eb', 'Gb'], ['Db', 'Fb', 'Ab'], ['Eb', 'Gb', 'Bb'],
-                    ['Fb', 'Ab', 'Cb'], ['Gb', 'Bb', 'Db'], ['Ab', 'Cb', 'Eb']
-                ],
-                sevenths: [
-                    ['Cb', 'Eb', 'Gb', 'Bb'], ['Db', 'Fb', 'Ab', 'Cb'], ['Eb', 'Gb', 'Bb', 'Db'],
-                    ['Fb', 'Ab', 'Cb', 'Eb'], ['Gb', 'Bb', 'Db', 'Fb'], ['Ab', 'Cb', 'Eb', 'Gb']
                 ]
             },
             'G Major': {
@@ -951,7 +918,7 @@
             
             sharps.forEach((note, i) => {
                 const accidental = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                accidental.setAttribute('x', 120 + i * 20);
+                accidental.setAttribute('x', 120 + i * 16); // 간격 축소
                 const isSharp = note.includes('#');
                 accidental.setAttribute('y', isSharp ? sharpPositions[note[0]] : flatPositions[note[0]]);
                 accidental.setAttribute('font-size', '40');
