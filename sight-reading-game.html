@@ -688,13 +688,122 @@
 
         // Key Signatures
         const keySignatures = {
-            'C Major': [],
-            'G Major': ['F#'],
-            'D Major': ['F#', 'C#'],
+            // 플랫 조표 (7개)
             'F Major': ['Bb'],
             'Bb Major': ['Bb', 'Eb'],
-            'A Major': ['F#', 'C#', 'G#'],
-            'E Major': ['F#', 'C#', 'G#', 'D#']
+            'Eb Major': ['Bb', 'Eb', 'Ab'],
+            'Ab Major': ['Bb', 'Eb', 'Ab', 'Db'],
+            'Db Major': ['Bb', 'Eb', 'Ab', 'Db', 'Gb'],
+            'Gb Major': ['Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb'],
+            'Cb Major': ['Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb', 'Fb'],
+            // 샵 조표 (3개)
+            'G Major': ['F#'],
+            'D Major': ['F#', 'C#'],
+            'A Major': ['F#', 'C#', 'G#']
+        };
+
+        // Diatonic chords for each key (실제 음악적 화음)
+        const diatonicChords = {
+            'F Major': {
+                triads: [
+                    ['F', 'A', 'C'], ['G', 'Bb', 'D'], ['A', 'C', 'E'],
+                    ['Bb', 'D', 'F'], ['C', 'E', 'G'], ['D', 'F', 'A']
+                ],
+                sevenths: [
+                    ['F', 'A', 'C', 'E'], ['G', 'Bb', 'D', 'F'], ['A', 'C', 'E', 'G'],
+                    ['Bb', 'D', 'F', 'A'], ['C', 'E', 'G', 'Bb'], ['D', 'F', 'A', 'C']
+                ]
+            },
+            'Bb Major': {
+                triads: [
+                    ['Bb', 'D', 'F'], ['C', 'Eb', 'G'], ['D', 'F', 'A'],
+                    ['Eb', 'G', 'Bb'], ['F', 'A', 'C'], ['G', 'Bb', 'D']
+                ],
+                sevenths: [
+                    ['Bb', 'D', 'F', 'A'], ['C', 'Eb', 'G', 'Bb'], ['D', 'F', 'A', 'C'],
+                    ['Eb', 'G', 'Bb', 'D'], ['F', 'A', 'C', 'Eb'], ['G', 'Bb', 'D', 'F']
+                ]
+            },
+            'Eb Major': {
+                triads: [
+                    ['Eb', 'G', 'Bb'], ['F', 'Ab', 'C'], ['G', 'Bb', 'D'],
+                    ['Ab', 'C', 'Eb'], ['Bb', 'D', 'F'], ['C', 'Eb', 'G']
+                ],
+                sevenths: [
+                    ['Eb', 'G', 'Bb', 'D'], ['F', 'Ab', 'C', 'Eb'], ['G', 'Bb', 'D', 'F'],
+                    ['Ab', 'C', 'Eb', 'G'], ['Bb', 'D', 'F', 'Ab'], ['C', 'Eb', 'G', 'Bb']
+                ]
+            },
+            'Ab Major': {
+                triads: [
+                    ['Ab', 'C', 'Eb'], ['Bb', 'Db', 'F'], ['C', 'Eb', 'G'],
+                    ['Db', 'F', 'Ab'], ['Eb', 'G', 'Bb'], ['F', 'Ab', 'C']
+                ],
+                sevenths: [
+                    ['Ab', 'C', 'Eb', 'G'], ['Bb', 'Db', 'F', 'Ab'], ['C', 'Eb', 'G', 'Bb'],
+                    ['Db', 'F', 'Ab', 'C'], ['Eb', 'G', 'Bb', 'Db'], ['F', 'Ab', 'C', 'Eb']
+                ]
+            },
+            'Db Major': {
+                triads: [
+                    ['Db', 'F', 'Ab'], ['Eb', 'Gb', 'Bb'], ['F', 'Ab', 'C'],
+                    ['Gb', 'Bb', 'Db'], ['Ab', 'C', 'Eb'], ['Bb', 'Db', 'F']
+                ],
+                sevenths: [
+                    ['Db', 'F', 'Ab', 'C'], ['Eb', 'Gb', 'Bb', 'Db'], ['F', 'Ab', 'C', 'Eb'],
+                    ['Gb', 'Bb', 'Db', 'F'], ['Ab', 'C', 'Eb', 'Gb'], ['Bb', 'Db', 'F', 'Ab']
+                ]
+            },
+            'Gb Major': {
+                triads: [
+                    ['Gb', 'Bb', 'Db'], ['Ab', 'Cb', 'Eb'], ['Bb', 'Db', 'F'],
+                    ['Cb', 'Eb', 'Gb'], ['Db', 'F', 'Ab'], ['Eb', 'Gb', 'Bb']
+                ],
+                sevenths: [
+                    ['Gb', 'Bb', 'Db', 'F'], ['Ab', 'Cb', 'Eb', 'Gb'], ['Bb', 'Db', 'F', 'Ab'],
+                    ['Cb', 'Eb', 'Gb', 'Bb'], ['Db', 'F', 'Ab', 'Cb'], ['Eb', 'Gb', 'Bb', 'Db']
+                ]
+            },
+            'Cb Major': {
+                triads: [
+                    ['Cb', 'Eb', 'Gb'], ['Db', 'Fb', 'Ab'], ['Eb', 'Gb', 'Bb'],
+                    ['Fb', 'Ab', 'Cb'], ['Gb', 'Bb', 'Db'], ['Ab', 'Cb', 'Eb']
+                ],
+                sevenths: [
+                    ['Cb', 'Eb', 'Gb', 'Bb'], ['Db', 'Fb', 'Ab', 'Cb'], ['Eb', 'Gb', 'Bb', 'Db'],
+                    ['Fb', 'Ab', 'Cb', 'Eb'], ['Gb', 'Bb', 'Db', 'Fb'], ['Ab', 'Cb', 'Eb', 'Gb']
+                ]
+            },
+            'G Major': {
+                triads: [
+                    ['G', 'B', 'D'], ['A', 'C', 'E'], ['B', 'D', 'F'],
+                    ['C', 'E', 'G'], ['D', 'F', 'A'], ['E', 'G', 'B']
+                ],
+                sevenths: [
+                    ['G', 'B', 'D', 'F'], ['A', 'C', 'E', 'G'], ['B', 'D', 'F', 'A'],
+                    ['C', 'E', 'G', 'B'], ['D', 'F', 'A', 'C'], ['E', 'G', 'B', 'D']
+                ]
+            },
+            'D Major': {
+                triads: [
+                    ['D', 'F', 'A'], ['E', 'G', 'B'], ['F', 'A', 'C'],
+                    ['G', 'B', 'D'], ['A', 'C', 'E'], ['B', 'D', 'F']
+                ],
+                sevenths: [
+                    ['D', 'F', 'A', 'C'], ['E', 'G', 'B', 'D'], ['F', 'A', 'C', 'E'],
+                    ['G', 'B', 'D', 'F'], ['A', 'C', 'E', 'G'], ['B', 'D', 'F', 'A']
+                ]
+            },
+            'A Major': {
+                triads: [
+                    ['A', 'C', 'E'], ['B', 'D', 'F'], ['C', 'E', 'G'],
+                    ['D', 'F', 'A'], ['E', 'G', 'B'], ['F', 'A', 'C']
+                ],
+                sevenths: [
+                    ['A', 'C', 'E', 'G'], ['B', 'D', 'F', 'A'], ['C', 'E', 'G', 'B'],
+                    ['D', 'F', 'A', 'C'], ['E', 'G', 'B', 'D'], ['F', 'A', 'C', 'E']
+                ]
+            }
         };
 
         // Game State
@@ -829,14 +938,15 @@
             };
             
             // 플랫 순서: B, E, A, D, G, C, F
+            // 올바른 표기법: B4(3선), E5(1-2선사이 위), A4(3-4선사이), D5(2선), G5(1선위), C5(2-3선사이), F5(1선)
             const flatPositions = { 
-                'B': 51.5,  // B5 - 37.5 + 14
-                'E': 81.5,  // E5 - 67.5 + 14
-                'A': 59,    // A5 - 45 + 14
-                'D': 89,    // D5 - 75 + 14
-                'G': 66.5,  // G5 - 52.5 + 14
-                'C': 96.5,  // C5 - 82.5 + 14
-                'F': 74     // F5 - 60 + 14
+                'B': 104,   // B4 (3선) - 90 + 14
+                'E': 81.5,  // E5 (1-2선 사이) - 67.5 + 14
+                'A': 111.5, // A4 (3-4선 사이) - 97.5 + 14
+                'D': 89,    // D5 (2선) - 75 + 14
+                'G': 66.5,  // G5 (1선 위) - 52.5 + 14
+                'C': 96.5,  // C5 (2-3선 사이) - 82.5 + 14
+                'F': 74     // F5 (1선) - 60 + 14
             };
             
             sharps.forEach((note, i) => {
@@ -935,20 +1045,32 @@
             // Draw ledger line if A or B is in the chord
             if (noteNames.includes('A') || noteNames.includes('B')) {
                 const ledger = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                ledger.setAttribute('x1', x - 15);
+                ledger.setAttribute('x1', x - 20);
                 ledger.setAttribute('y1', 45);
-                ledger.setAttribute('x2', x + 15);
+                ledger.setAttribute('x2', x + 20);
                 ledger.setAttribute('y2', 45);
                 ledger.setAttribute('stroke', '#666');
                 ledger.setAttribute('stroke-width', '2');
                 svg.appendChild(ledger);
             }
 
+            // Check for adjacent notes (2nd intervals) that need offset
+            const needsOffset = [];
+            for (let i = 0; i < sortedNotes.length - 1; i++) {
+                const current = order.indexOf(sortedNotes[i]);
+                const next = order.indexOf(sortedNotes[i + 1]);
+                // If notes are adjacent (2nd interval), offset the upper note to the right
+                if (next - current === 1) {
+                    needsOffset.push(sortedNotes[i + 1]);
+                }
+            }
+
             sortedNotes.forEach((noteName) => {
                 const y = notePositions[noteName];
+                const offset = needsOffset.includes(noteName) ? 12 : 0; // Shift right if overlapping
                 
                 const note = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
-                note.setAttribute('cx', x);
+                note.setAttribute('cx', x + offset);
                 note.setAttribute('cy', y);
                 note.setAttribute('rx', '10');
                 note.setAttribute('ry', '8');
@@ -979,15 +1101,38 @@
         function generateQuestion() {
             const keys = Object.keys(keySignatures);
             const randomKey = keys[Math.floor(Math.random() * keys.length)];
-            const notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
             
-            // Generate notes based on mode
-            const noteCount = gameState.mode;
-            const selectedNotes = [];
+            let selectedNotes = [];
             
-            for (let i = 0; i < noteCount; i++) {
+            if (gameState.mode === 1) {
+                // 단음: C~B 중 랜덤
+                const notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
                 const randomNote = notes[Math.floor(Math.random() * notes.length)];
-                selectedNotes.push(randomNote);
+                selectedNotes = [randomNote];
+            } else if (gameState.mode === 2) {
+                // 2화음: 3화음 중 2개 또는 7화음 중 2개
+                const chords = diatonicChords[randomKey];
+                const useTriad = Math.random() > 0.5;
+                const chordPool = useTriad ? chords.triads : chords.sevenths;
+                const randomChord = chordPool[Math.floor(Math.random() * chordPool.length)];
+                
+                // 랜덤하게 2개 선택 (인접한 음 우선)
+                const start = Math.floor(Math.random() * (randomChord.length - 1));
+                selectedNotes = [randomChord[start], randomChord[start + 1]];
+            } else if (gameState.mode === 3) {
+                // 3화음: 전체 3화음 또는 7화음 중 3개
+                const chords = diatonicChords[randomKey];
+                const useTriad = Math.random() > 0.3; // 70% 3화음, 30% 7화음
+                
+                if (useTriad) {
+                    const randomChord = chords.triads[Math.floor(Math.random() * chords.triads.length)];
+                    selectedNotes = [...randomChord]; // 전체 3화음
+                } else {
+                    const randomChord = chords.sevenths[Math.floor(Math.random() * chords.sevenths.length)];
+                    // 7화음 중 3개 선택 (연속된 3개)
+                    const start = Math.floor(Math.random() * 2); // 0 or 1
+                    selectedNotes = randomChord.slice(start, start + 3);
+                }
             }
             
             gameState.currentKey = randomKey;
@@ -999,7 +1144,7 @@
             const svg = drawStaff();
             drawKeySignature(svg, randomKey);
             
-            if (noteCount === 1) {
+            if (selectedNotes.length === 1) {
                 drawNote(svg, selectedNotes[0]);
             } else {
                 drawChord(svg, selectedNotes);
